@@ -1,0 +1,10 @@
+[package]
+name = "rusty-proxy"
+version = "0.1.0"
+authors = ["Pete Wildsmith <pete@weargoggles.co.uk>"]
+
+[dependencies]
+actix-web = "1.0"
+activitypub = "0.1"
+url = "2.1"
+serde = "1"

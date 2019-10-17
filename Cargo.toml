@@ -1,10 +1,15 @@
 [package]
-name = "rusty-proxy"
+name = "heffalump"
 version = "0.1.0"
 authors = ["Pete Wildsmith <pete@weargoggles.co.uk>"]
 
 [dependencies]
+actix = "0.8"
 actix-web = "1.0"
 activitypub = "0.1"
 url = "2.1"
 serde = "1"
+tokio-postgres = "0.4.0-rc.3"
+tokio = "0.1"
+postgres-native-tls = "0.2.0-rc.1"
+native-tls = "0.2"

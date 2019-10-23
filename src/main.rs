@@ -8,6 +8,7 @@ extern crate native_tls;
 
 use actix::{System};
 use actix_web::{guard, web, App, HttpRequest, HttpResponse, HttpServer, Responder};
+use actix_web::error::{UrlGenerationError};
 use activitypub::actor::{Person};
 use activitypub::collection::{OrderedCollection};
 use std::env;
@@ -19,18 +20,27 @@ fn index() -> impl Responder {
     HttpResponse::Ok().body("Hello nicely nicely world!\n")
 }
 
-fn actor(req: HttpRequest, info: web::Path<(String,)>) -> impl Responder {
+fn url_for<U, I>(
+        req: &HttpRequest,
+        name: &str,
+        elements: U,
+    ) -> Result<String, UrlGenerationError>
+    where
+        U: IntoIterator<Item = I>,
+        I: AsRef<str>,
+    {
+    match req.url_for(name, elements) {
+        Ok(url) => Ok(url.into_string()),
+        Err(e) => Err(e),
+    }
+}
+
+fn actor(req: HttpRequest, info: web::Path<(String,)>) -> Result<impl Responder, UrlGenerationError> {
     let mut person = Person::default();
 
-    let inbox_url_string = match req.url_for("inbox", &[&info.0]) {
-        Ok(url) => url.into_string(),
-        Err(e) => return Err(e),
-    };
+    let inbox_url_string = url_for(&req, "inbox", &[&info.0])?;
 
-    let outbox_url_string = match req.url_for("outbox", &[&info.0]) {
-        Ok(url) => url.into_string(),
-        Err(e) => return Err(e),
-    };
+    let outbox_url_string = url_for(&req, "outbox", &[&info.0])?;
 
     person.ap_actor_props.inbox = inbox_url_string.into();
     person.ap_actor_props.outbox = outbox_url_string.into();
